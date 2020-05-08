@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <getopt.h>
 
-#define ALIVE '*'
-#define DEAD  ' '
+#define ALIVE "\u2588" // Full block
+#define DEAD  " "
 
 #define GET_BIT(n, i) (((n) >> (i)) & 1U)
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
   for (uint64_t gen = 0; gen < gens; gen++) {
     for (uint8_t i = 0; i < width; i++) {
       uint8_t middle = GET_BIT(tape, i);
-      putc(middle ? ALIVE : DEAD, stdout);
+      printf("%s", middle ? ALIVE : DEAD);
       uint8_t right = (i + 1 < width) ? GET_BIT(tape, i + 1U) : first;
       uint8_t next = GET_BIT(rule, left << 2U | middle << 1U | right);
       left = middle;
