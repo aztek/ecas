@@ -3,9 +3,6 @@
 #include <stdint.h>
 #include <getopt.h>
 
-#define ALIVE "\u2588" // Full block
-#define DEAD  " "
-
 #define GET_BIT(n, i) (((n) >> (i)) & 1U)
 
 int main(int argc, char* argv[]) {
@@ -13,9 +10,11 @@ int main(int argc, char* argv[]) {
   uint8_t  rule  = 90;
   uint64_t gens  = 32;
   uint64_t tape  = 2147483648;
+  char*    alive = "\u2588"; // Full block
+  char*    dead  = " ";
 
   int c;
-  while ((c = getopt(argc, argv, "w:r:g:t:")) != -1) {
+  while ((c = getopt(argc, argv, "w:r:g:t:a:d:")) != -1) {
     switch (c) {
       case 'w':
         width = strtoul(optarg, NULL, 10);
@@ -36,19 +35,27 @@ int main(int argc, char* argv[]) {
       case 't':
         tape = strtoull(optarg, NULL, 10);
         break;
+        
+      case 'a':
+        alive = optarg;
+        break;
+
+      case 'd':
+        dead = optarg;
+        break;
 
       default:
         fprintf(stderr, "Unknown argument\n");
         return 1;
     }
   }
-  
+
   uint8_t first = GET_BIT(tape, 0U);
   uint8_t left = GET_BIT(tape, width - 1U);
   for (uint64_t gen = 0; gen < gens; gen++) {
     for (uint8_t i = 0; i < width; i++) {
       uint8_t middle = GET_BIT(tape, i);
-      printf("%s", middle ? ALIVE : DEAD);
+      printf("%s", middle ? alive : dead);
       uint8_t right = (i + 1 < width) ? GET_BIT(tape, i + 1U) : first;
       uint8_t next = GET_BIT(rule, left << 2U | middle << 1U | right);
       left = middle;
