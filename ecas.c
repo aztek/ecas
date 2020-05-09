@@ -8,7 +8,7 @@
 int main(int argc, char* argv[]) {
   uint8_t  width = 64;
   uint8_t  rule  = 110;
-  uint64_t gens  = 32;
+  uint64_t gens  = 0;
   uint64_t tape  = 1ULL;
   char*    alive = "\u2588"; // Full block
   char*    dead  = " ";
@@ -50,12 +50,12 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  do {
+  for (uint64_t gen = 0; gens == 0 || gen < gens; gen++) {
     uint64_t next = 0;
     for (uint8_t i = 0; i < width; i++) {
-      uint8_t left   = GET_BIT(tape, (i + 1) % width);
+      uint8_t left   = GET_BIT(tape, (i - 1U) % width);
       uint8_t middle = GET_BIT(tape, i);
-      uint8_t right  = GET_BIT(tape, (i - 1) % width);
+      uint8_t right  = GET_BIT(tape, (i + 1U) % width);
       uint8_t config = left << 2U | middle << 1U | right;
       if (GET_BIT(rule, config)) {
         next |= 1ULL << i;
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     tape = next;
-  } while (--gens);
+  }
 
   return 0;
 }
