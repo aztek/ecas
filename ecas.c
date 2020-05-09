@@ -63,6 +63,9 @@ int main(int argc, char* argv[]) {
       printf("%s", middle ? alive : dead);
     }
     printf("\n");
+    if (tape == next) {
+      break;
+    }
     tape = next;
   } while (--gens);
 
