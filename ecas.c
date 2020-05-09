@@ -50,25 +50,21 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  uint8_t first = GET_BIT(tape, 0U);
-  uint8_t left = GET_BIT(tape, width - 1U);
-  for (uint64_t gen = 0; gen < gens; gen++) {
+  do {
+    uint64_t next = 0;
     for (uint8_t i = 0; i < width; i++) {
+      printf("%s", GET_BIT(tape, i) ? alive : dead);
+      uint8_t left   = GET_BIT(tape, i > 0 ? i - 1U : width - 1U);
       uint8_t middle = GET_BIT(tape, i);
-      printf("%s", middle ? alive : dead);
-      uint8_t right = (i + 1 < width) ? GET_BIT(tape, i + 1U) : first;
-      uint8_t next = GET_BIT(rule, left << 2U | middle << 1U | right);
-      left = middle;
-      if (next) {
-        tape |= (1ULL << i);
-      } else {
-        tape &= ~(1ULL << i);
-      }
-      if (i == 0) {
-        first = next;
+      uint8_t right  = GET_BIT(tape, i + 1 < width ? i + 1U : 0U);
+      uint8_t conf   = left << 2U | middle << 1U | right;
+      if (GET_BIT(rule, conf)) {
+        next |= 1ULL << i;
       }
     }
     printf("\n");
-  }
+    tape = next;
+  } while (--gens);
+
   return 0;
 }
