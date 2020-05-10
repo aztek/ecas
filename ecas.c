@@ -19,10 +19,10 @@ int main(int argc, char* argv[]) {
   char* dead  = " ";
 
   int c;
-  while ((c = getopt(argc, argv, "w:r:g:t:a:d:")) != -1) {
+  while (-1 != (c = getopt(argc, argv, "w:r:g:t:a:d:"))) {
     switch (c) {
       case 'w':
-        width = strtoul(optarg, NULL, 10);
+        width = strtoull(optarg, NULL, 10);
         break;
 
       case 'r':
@@ -67,9 +67,9 @@ int main(int argc, char* argv[]) {
   }
 
   uint8_t* next = malloc(tape_width);
-  for (uint64_t gen = 0; gens == 0 || gen < gens; gen++) {
+  for (uint64_t gen = 0; 0 == gens || gen < gens; gen++) {
     memset(next, 0, tape_width);
-    for (uint8_t i = 0; i < width; i++) {
+    for (uint64_t i = 0; i < width; i++) {
       uint8_t left   = GET_CELL(tape, i - 1U);
       uint8_t middle = GET_CELL(tape, i);
       uint8_t right  = GET_CELL(tape, i + 1U);
