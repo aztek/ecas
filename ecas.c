@@ -4,17 +4,18 @@
 #include <string.h>
 #include <getopt.h>
 
-#define CHAR_WIDTH 8
+typedef uint64_t block_t;
+#define BLOCK_WIDTH (8 * sizeof(block_t))
 
 #define GET_BIT(n, i) (((n) >> (i)) & 1U)
-#define GET_CELL(tape, i) GET_BIT(tape[((i)%width) / CHAR_WIDTH], ((i)%width) % CHAR_WIDTH)
-#define SET_CELL(tape, i) (tape[((i)%width) / CHAR_WIDTH] |= 1ULL << (((i)%width) % CHAR_WIDTH))
+#define GET_CELL(tape, i) GET_BIT(tape[((i) % width) / BLOCK_WIDTH], ((i) % width) % BLOCK_WIDTH)
+#define SET_CELL(tape, i) (tape[((i) % width) / BLOCK_WIDTH] |= 1ULL << (((i) % width) % BLOCK_WIDTH))
 
 int main(int argc, char* argv[]) {
   uint64_t width = 64;
   uint8_t  rule  = 90;
   uint64_t gens  = 32;
-  char* init  = "32";
+  char* init  = "31";
   char* alive = "\u2588"; // Full block
   char* dead  = " ";
 
@@ -51,10 +52,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  uint8_t blocks = (width + (CHAR_WIDTH - 1)) / CHAR_WIDTH;
-  size_t tape_width = sizeof(uint8_t) * blocks;
+  block_t blocks = (width + (BLOCK_WIDTH - 1)) / BLOCK_WIDTH;
+  size_t tape_width = sizeof(block_t) * blocks;
 
-  uint8_t* tape = malloc(tape_width);
+  block_t* tape = malloc(tape_width);
   memset(tape, 0, tape_width);
   char* p = strtok(init, ",");
   while (p != NULL) {
@@ -78,7 +79,7 @@ int main(int argc, char* argv[]) {
     p = strtok(NULL, ",");
   }
 
-  uint8_t* next = malloc(tape_width);
+  block_t* next = malloc(tape_width);
   for (uint64_t gen = 0; 0 == gens || gen < gens; gen++) {
     memset(next, 0, tape_width);
     for (uint64_t i = 0; i < width; i++) {
