@@ -58,11 +58,23 @@ int main(int argc, char* argv[]) {
   memset(tape, 0, tape_width);
   char* p = strtok(init, ",");
   while (p != NULL) {
-    uint64_t i = strtoull(p, NULL, 10);
-    if (i >= width) {
-      i = width - 1;
+    uint64_t i, j;
+    switch (sscanf(p, "%llu-%llu", &i, &j)) {
+      case 1:
+        j = i;
+
+      case 2:
+        if (i >= width) i = width - 1;
+        if (j >= width) j = width - 1;
+        for (uint64_t k = i; k <= j; k++) {
+          SET_CELL(tape, k);
+        }
+        break;
+
+      default:
+        fprintf(stderr, "Incorrect value of -t\n");
+        return 1;
     }
-    SET_CELL(tape, i);
     p = strtok(NULL, ",");
   }
 
