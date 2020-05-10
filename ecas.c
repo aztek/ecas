@@ -4,6 +4,8 @@
 #include <getopt.h>
 
 #define GET_BIT(n, i) (((n) >> (i)) & 1U)
+#define GET_CELL(tape, i) GET_BIT(tape, (i) % width)
+#define SET_CELL(tape, i) ((tape) |= 1ULL << (i))
 
 int main(int argc, char* argv[]) {
   uint8_t  width = 64;
@@ -53,12 +55,12 @@ int main(int argc, char* argv[]) {
   for (uint64_t gen = 0; gens == 0 || gen < gens; gen++) {
     uint64_t next = 0;
     for (uint8_t i = 0; i < width; i++) {
-      uint8_t left   = GET_BIT(tape, (i - 1U) % width);
-      uint8_t middle = GET_BIT(tape, i);
-      uint8_t right  = GET_BIT(tape, (i + 1U) % width);
+      uint8_t left   = GET_CELL(tape, i - 1U);
+      uint8_t middle = GET_CELL(tape, i);
+      uint8_t right  = GET_CELL(tape, i + 1U);
       uint8_t config = left << 2U | middle << 1U | right;
       if (GET_BIT(rule, config)) {
-        next |= 1ULL << i;
+        SET_CELL(next, i);
       }
       printf("%s", middle ? alive : dead);
     }
