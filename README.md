@@ -6,7 +6,7 @@ $ make
 
 ## [Rule 30](https://en.wikipedia.org/wiki/Rule_30)
 ```
-$ ./ecas -r 30 -t 2147483648 -g 32 -a '^'
+$ ./ecas -r 30 -t 31 -g 32 -a '^'
                                ^
                               ^^^
                              ^^  ^
@@ -43,7 +43,7 @@ $ ./ecas -r 30 -t 2147483648 -g 32 -a '^'
 
 ## [Rule 90](https://en.wikipedia.org/wiki/Rule_90)
 ```
-$ ./ecas -r 90 -t 2147483648 -a '*'
+$ ./ecas -r 90 -t 31 -a '*'
                                *
                               * *
                              *   *
@@ -76,12 +76,11 @@ $ ./ecas -r 90 -t 2147483648 -a '*'
   * *     * *     * *     * *     * *     * *     * *     * *
  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
 ```
 
 ## [Rule 110](https://en.wikipedia.org/wiki/Rule_110)
 ```
-$ ./ecas -r 110 -t 2147483648 -g 32 -w 32 -a 'J'
+$ ./ecas -r 110 -t 31 -g 32 -w 32 -a 'J'
                                J
                               JJ
                              JJJ

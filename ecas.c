@@ -1,29 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <getopt.h>
 
+#define CHAR_WIDTH 8
+
 #define GET_BIT(n, i) (((n) >> (i)) & 1U)
-#define GET_CELL(tape, i) GET_BIT(tape, (i) % width)
-#define SET_CELL(tape, i) ((tape) |= 1ULL << (i))
+#define GET_CELL(tape, i) GET_BIT(tape[((i)%width) / CHAR_WIDTH], ((i)%width) % CHAR_WIDTH)
+#define SET_CELL(tape, i) (tape[((i)%width) / CHAR_WIDTH] |= 1ULL << (((i)%width) % CHAR_WIDTH))
 
 int main(int argc, char* argv[]) {
-  uint8_t  width = 64;
-  uint8_t  rule  = 110;
-  uint64_t gens  = 0;
-  uint64_t tape  = 1ULL;
-  char*    alive = "\u2588"; // Full block
-  char*    dead  = " ";
+  uint64_t width = 64;
+  uint8_t  rule  = 90;
+  uint64_t gens  = 32;
+  char* init  = "32";
+  char* alive = "\u2588"; // Full block
+  char* dead  = " ";
 
   int c;
   while ((c = getopt(argc, argv, "w:r:g:t:a:d:")) != -1) {
     switch (c) {
       case 'w':
         width = strtoul(optarg, NULL, 10);
-        if (width < 1 || width > 64) {
-          fprintf(stderr, "Incorrect value of width %s\n", optarg);
-          return 1;
-        }
         break;
 
       case 'r':
@@ -35,9 +34,9 @@ int main(int argc, char* argv[]) {
         break;
 
       case 't':
-        tape = strtoull(optarg, NULL, 10);
+        init = optarg;
         break;
-        
+
       case 'a':
         alive = optarg;
         break;
@@ -52,8 +51,24 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  uint8_t blocks = (width + (CHAR_WIDTH - 1)) / CHAR_WIDTH;
+  size_t tape_width = sizeof(uint8_t) * blocks;
+
+  uint8_t* tape = malloc(tape_width);
+  memset(tape, 0, tape_width);
+  char* p = strtok(init, ",");
+  while (p != NULL) {
+    uint64_t i = strtoull(p, NULL, 10);
+    if (i >= width) {
+      i = width - 1;
+    }
+    SET_CELL(tape, i);
+    p = strtok(NULL, ",");
+  }
+
+  uint8_t* next = malloc(tape_width);
   for (uint64_t gen = 0; gens == 0 || gen < gens; gen++) {
-    uint64_t next = 0;
+    memset(next, 0, tape_width);
     for (uint8_t i = 0; i < width; i++) {
       uint8_t left   = GET_CELL(tape, i - 1U);
       uint8_t middle = GET_CELL(tape, i);
@@ -65,11 +80,14 @@ int main(int argc, char* argv[]) {
       printf("%s", middle ? alive : dead);
     }
     printf("\n");
-    if (tape == next) {
+    if (0 == memcmp(tape, next, tape_width)) {
       break;
     }
-    tape = next;
+    memcpy(tape, next, tape_width);
   }
+
+  free(next);
+  free(tape);
 
   return 0;
 }
